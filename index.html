@@ -81,10 +81,17 @@ max-width: 480px;
 background: #ffffff;
 border: 1px solid #d8d8d0;
 border-radius: 4px;
-padding: 32px;
+padding: 32px 24px;
 position: relative;
 z-index: 1;
 margin-bottom: 24px;
+box-sizing: border-box;
+}
+
+.form-group {
+width: 100%;
+margin-bottom: 16px;
+box-sizing: border-box;
 }
 
 .status-pill {
@@ -157,9 +164,6 @@ margin-top: 4px;
 }
 
 /* FORM */
-.form-group {
-margin-bottom: 16px;
-}
 
 label {
 display: block;
@@ -381,7 +385,7 @@ z-index: 1;
 
   <div class="form-group" id="nameGroup">
     <label for="nameInput">Your Name</label>
-    <input type="text" id="nameInput" placeholder="Enter your name to check out" maxlength="40" autocomplete="off">
+    <input type="text" id="nameInput" placeholder="Your name" maxlength="40" autocomplete="off">
     <div class="error" id="nameError">Please enter your name.</div>
   </div>
 
