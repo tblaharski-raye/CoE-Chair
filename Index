@@ -1,0 +1,526 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Coach's Chair</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Mono:wght@400;500&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #f4f4f0;
+    --surface: #ffffff;
+    --border: #d8d8d0;
+    --available: #1a7a3e;
+    --out: #b91c1c;
+    --text: #111111;
+    --muted: #555550;
+    --accent: #b45309;
+  }
+
+- { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+background: #f4f4f0;
+color: #111111;
+font-family: ‘DM Sans’, sans-serif;
+min-height: 100vh;
+display: flex;
+flex-direction: column;
+align-items: center;
+padding: 40px 20px;
+position: relative;
+overflow-x: hidden;
+}
+
+body::before {
+content: ‘’;
+position: fixed;
+top: -200px;
+left: 50%;
+transform: translateX(-50%);
+width: 600px;
+height: 600px;
+background: radial-gradient(circle, rgba(180,83,9,0.05) 0%, transparent 70%);
+pointer-events: none;
+z-index: 0;
+}
+
+header {
+text-align: center;
+margin-bottom: 48px;
+position: relative;
+z-index: 1;
+}
+
+.eyebrow {
+font-family: ‘DM Mono’, monospace;
+font-size: 11px;
+letter-spacing: 3px;
+text-transform: uppercase;
+color: var(–muted);
+margin-bottom: 8px;
+}
+
+h1 {
+font-family: ‘Bebas Neue’, sans-serif;
+font-size: clamp(52px, 10vw, 88px);
+letter-spacing: 4px;
+line-height: 1;
+color: #111111;
+}
+
+h1 span {
+color: #b45309;
+}
+
+/* STATUS CARD */
+.status-card {
+width: 100%;
+max-width: 480px;
+background: #ffffff;
+border: 1px solid #d8d8d0;
+border-radius: 4px;
+padding: 32px;
+position: relative;
+z-index: 1;
+margin-bottom: 24px;
+}
+
+.status-pill {
+display: inline-flex;
+align-items: center;
+gap: 8px;
+padding: 6px 14px;
+border-radius: 2px;
+font-family: ‘DM Mono’, monospace;
+font-size: 12px;
+letter-spacing: 2px;
+text-transform: uppercase;
+font-weight: 500;
+margin-bottom: 24px;
+transition: all 0.3s ease;
+}
+
+.status-pill.available {
+background: rgba(26,122,62,0.1);
+color: var(–available);
+border: 1px solid rgba(26,122,62,0.35);
+}
+
+.status-pill.checked-out {
+background: rgba(185,28,28,0.1);
+color: var(–out);
+border: 1px solid rgba(185,28,28,0.35);
+}
+
+.dot {
+width: 6px;
+height: 6px;
+border-radius: 50%;
+background: currentColor;
+animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+0%, 100% { opacity: 1; }
+50% { opacity: 0.3; }
+}
+
+.current-holder {
+margin-bottom: 24px;
+min-height: 48px;
+}
+
+.holder-label {
+font-size: 11px;
+letter-spacing: 2px;
+text-transform: uppercase;
+color: var(–muted);
+font-family: ‘DM Mono’, monospace;
+margin-bottom: 4px;
+}
+
+.holder-name {
+font-family: ‘Bebas Neue’, sans-serif;
+font-size: 36px;
+letter-spacing: 2px;
+color: var(–out);
+line-height: 1;
+}
+
+.holder-time {
+font-family: ‘DM Mono’, monospace;
+font-size: 12px;
+color: var(–muted);
+margin-top: 4px;
+}
+
+/* FORM */
+.form-group {
+margin-bottom: 16px;
+}
+
+label {
+display: block;
+font-size: 11px;
+letter-spacing: 2px;
+text-transform: uppercase;
+color: var(–muted);
+font-family: ‘DM Mono’, monospace;
+margin-bottom: 8px;
+}
+
+input[type=“text”] {
+width: 100%;
+background: #f9f9f6;
+border: 1px solid var(–border);
+border-radius: 2px;
+padding: 12px 16px;
+color: var(–text);
+font-family: ‘DM Sans’, sans-serif;
+font-size: 16px;
+outline: none;
+transition: border-color 0.2s;
+}
+
+input[type=“text”]:focus {
+border-color: var(–accent);
+}
+
+input[type=“text”]::placeholder {
+color: var(–muted);
+}
+
+.btn {
+width: 100%;
+padding: 14px;
+border: none;
+border-radius: 2px;
+font-family: ‘Bebas Neue’, sans-serif;
+font-size: 20px;
+letter-spacing: 3px;
+cursor: pointer;
+transition: all 0.2s;
+position: relative;
+overflow: hidden;
+}
+
+.btn-checkout {
+background: var(–available);
+color: #fff;
+}
+
+.btn-checkout:hover {
+background: #156333;
+transform: translateY(-1px);
+}
+
+.btn-checkin {
+background: var(–out);
+color: #fff;
+}
+
+.btn-checkin:hover {
+background: #991b1b;
+transform: translateY(-1px);
+}
+
+.btn:active {
+transform: translateY(0);
+}
+
+/* LOG */
+.log-section {
+width: 100%;
+max-width: 480px;
+position: relative;
+z-index: 1;
+}
+
+.log-header {
+display: flex;
+justify-content: space-between;
+align-items: center;
+margin-bottom: 12px;
+}
+
+.log-title {
+font-family: ‘DM Mono’, monospace;
+font-size: 11px;
+letter-spacing: 3px;
+text-transform: uppercase;
+color: var(–muted);
+}
+
+.clear-btn {
+font-family: ‘DM Mono’, monospace;
+font-size: 10px;
+letter-spacing: 1px;
+color: var(–muted);
+background: none;
+border: none;
+cursor: pointer;
+text-transform: uppercase;
+padding: 4px 0;
+text-decoration: underline;
+text-underline-offset: 3px;
+}
+
+.clear-btn:hover { color: var(–out); }
+
+.log-list {
+list-style: none;
+display: flex;
+flex-direction: column;
+gap: 2px;
+}
+
+.log-entry {
+display: grid;
+grid-template-columns: 20px 1fr auto;
+align-items: center;
+gap: 12px;
+padding: 12px 16px;
+background: #ffffff;
+border: 1px solid #d8d8d0;
+border-radius: 2px;
+font-size: 13px;
+animation: slideIn 0.3s ease;
+}
+
+@keyframes slideIn {
+from { opacity: 0; transform: translateX(-8px); }
+to { opacity: 1; transform: translateX(0); }
+}
+
+.log-icon {
+font-size: 14px;
+text-align: center;
+}
+
+.log-name {
+font-weight: 600;
+color: var(–text);
+}
+
+.log-action {
+font-size: 11px;
+color: var(–muted);
+font-family: ‘DM Mono’, monospace;
+margin-top: 1px;
+}
+
+.log-timestamp {
+font-family: ‘DM Mono’, monospace;
+font-size: 10px;
+color: var(–muted);
+text-align: right;
+white-space: nowrap;
+}
+
+.empty-log {
+text-align: center;
+padding: 32px;
+color: var(–muted);
+font-family: ‘DM Mono’, monospace;
+font-size: 12px;
+letter-spacing: 1px;
+border: 1px dashed var(–border);
+border-radius: 2px;
+}
+
+.error {
+color: var(–out);
+font-size: 12px;
+font-family: ‘DM Mono’, monospace;
+margin-top: 8px;
+display: none;
+}
+
+.error.visible { display: block; }
+
+.divider {
+width: 100%;
+max-width: 480px;
+height: 1px;
+background: var(–border);
+margin: 24px 0;
+position: relative;
+z-index: 1;
+}
+</style>
+
+</head>
+<body>
+
+<header>
+  <div class="eyebrow">Equipment Tracker</div>
+  <h1>Coach's <span>Chair</span></h1>
+</header>
+
+<div class="status-card" id="statusCard">
+  <div class="status-pill available" id="statusPill">
+    <span class="dot"></span>
+    <span id="statusText">Available</span>
+  </div>
+
+  <div class="current-holder" id="holderDisplay" style="display:none;">
+    <div class="holder-label">Checked out by</div>
+    <div class="holder-name" id="holderName"></div>
+    <div class="holder-time" id="holderTime"></div>
+  </div>
+
+  <div class="form-group" id="nameGroup">
+    <label for="nameInput">Your Name</label>
+    <input type="text" id="nameInput" placeholder="Enter your name to check out" maxlength="40" autocomplete="off">
+    <div class="error" id="nameError">Please enter your name.</div>
+  </div>
+
+<button class="btn btn-checkout" id="actionBtn" onclick="handleAction()">Check Out Chair</button>
+
+</div>
+
+<div class="divider"></div>
+
+<div class="log-section">
+  <div class="log-header">
+    <div class="log-title">Activity Log</div>
+    <button class="clear-btn" onclick="clearLog()">Clear log</button>
+  </div>
+  <ul class="log-list" id="logList"></ul>
+  <div class="empty-log" id="emptyLog">No activity yet.</div>
+</div>
+
+<script>
+  const STORAGE_KEY = 'coaches_chair_v1';
+
+  function loadState() {
+    try {
+      const raw = localStorage.getItem(STORAGE_KEY);
+      return raw ? JSON.parse(raw) : { checkedOut: false, holder: null, checkoutTime: null, log: [] };
+    } catch { return { checkedOut: false, holder: null, checkoutTime: null, log: [] }; }
+  }
+
+  function saveState(state) {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+  }
+
+  let state = loadState();
+
+  function formatTime(iso) {
+    const d = new Date(iso);
+    return d.toLocaleString('en-US', { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit', hour12: true });
+  }
+
+  function timeSince(iso) {
+    const diff = Date.now() - new Date(iso).getTime();
+    const mins = Math.floor(diff / 60000);
+    if (mins < 1) return 'just now';
+    if (mins < 60) return `${mins}m ago`;
+    const hrs = Math.floor(mins / 60);
+    if (hrs < 24) return `${hrs}h ${mins % 60}m ago`;
+    return `${Math.floor(hrs / 24)}d ago`;
+  }
+
+  function render() {
+    const pill = document.getElementById('statusPill');
+    const statusText = document.getElementById('statusText');
+    const actionBtn = document.getElementById('actionBtn');
+    const nameGroup = document.getElementById('nameGroup');
+    const holderDisplay = document.getElementById('holderDisplay');
+    const holderName = document.getElementById('holderName');
+    const holderTime = document.getElementById('holderTime');
+
+    if (state.checkedOut) {
+      pill.className = 'status-pill checked-out';
+      statusText.textContent = 'Checked Out';
+      actionBtn.className = 'btn btn-checkin';
+      actionBtn.textContent = 'Return Chair';
+      nameGroup.style.display = 'none';
+      holderDisplay.style.display = 'block';
+      holderName.textContent = state.holder;
+      holderTime.textContent = formatTime(state.checkoutTime) + ' · ' + timeSince(state.checkoutTime);
+    } else {
+      pill.className = 'status-pill available';
+      statusText.textContent = 'Available';
+      actionBtn.className = 'btn btn-checkout';
+      actionBtn.textContent = 'Check Out Chair';
+      nameGroup.style.display = 'block';
+      holderDisplay.style.display = 'none';
+      document.getElementById('nameInput').value = '';
+    }
+
+    renderLog();
+  }
+
+  function renderLog() {
+    const list = document.getElementById('logList');
+    const empty = document.getElementById('emptyLog');
+    list.innerHTML = '';
+
+    if (!state.log || state.log.length === 0) {
+      empty.style.display = 'block';
+      return;
+    }
+
+    empty.style.display = 'none';
+
+    [...state.log].reverse().slice(0, 30).forEach(entry => {
+      const li = document.createElement('li');
+      li.className = 'log-entry';
+      const icon = entry.action === 'checkout' ? '↗' : '↙';
+      const actionLabel = entry.action === 'checkout' ? 'Checked out' : 'Returned';
+      li.innerHTML = `
+        <span class="log-icon">${icon}</span>
+        <div>
+          <div class="log-name">${entry.name}</div>
+          <div class="log-action">${actionLabel}</div>
+        </div>
+        <div class="log-timestamp">${formatTime(entry.time)}</div>
+      `;
+      list.appendChild(li);
+    });
+  }
+
+  function handleAction() {
+    const error = document.getElementById('nameError');
+    error.classList.remove('visible');
+
+    if (!state.checkedOut) {
+      const name = document.getElementById('nameInput').value.trim();
+      if (!name) {
+        error.classList.add('visible');
+        document.getElementById('nameInput').focus();
+        return;
+      }
+      state.checkedOut = true;
+      state.holder = name;
+      state.checkoutTime = new Date().toISOString();
+      state.log.push({ name, action: 'checkout', time: state.checkoutTime });
+    } else {
+      state.log.push({ name: state.holder, action: 'checkin', time: new Date().toISOString() });
+      state.checkedOut = false;
+      state.holder = null;
+      state.checkoutTime = null;
+    }
+
+    saveState(state);
+    render();
+  }
+
+  function clearLog() {
+    if (!confirm('Clear the full activity log?')) return;
+    state.log = [];
+    saveState(state);
+    renderLog();
+  }
+
+  // Update "time since" every minute
+  setInterval(() => { if (state.checkedOut) render(); }, 60000);
+
+  render();
+</script>
+
+</body>
+</html>
