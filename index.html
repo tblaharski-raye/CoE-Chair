@@ -104,13 +104,13 @@ transition: all 0.3s ease;
 
 .status-pill.available {
 background: rgba(26,122,62,0.1);
-color: var(–available);
+color: #1a7a3e;
 border: 1px solid rgba(26,122,62,0.35);
 }
 
 .status-pill.checked-out {
 background: rgba(185,28,28,0.1);
-color: var(–out);
+color: #b91c1c;
 border: 1px solid rgba(185,28,28,0.35);
 }
 
@@ -136,7 +136,7 @@ min-height: 48px;
 font-size: 11px;
 letter-spacing: 2px;
 text-transform: uppercase;
-color: var(–muted);
+color: #555550;
 font-family: ‘DM Mono’, monospace;
 margin-bottom: 4px;
 }
@@ -145,14 +145,14 @@ margin-bottom: 4px;
 font-family: ‘Bebas Neue’, sans-serif;
 font-size: 36px;
 letter-spacing: 2px;
-color: var(–out);
+color: #b91c1c;
 line-height: 1;
 }
 
 .holder-time {
 font-family: ‘DM Mono’, monospace;
 font-size: 12px;
-color: var(–muted);
+color: #555550;
 margin-top: 4px;
 }
 
@@ -166,30 +166,34 @@ display: block;
 font-size: 11px;
 letter-spacing: 2px;
 text-transform: uppercase;
-color: var(–muted);
+color: #555550;
 font-family: ‘DM Mono’, monospace;
 margin-bottom: 8px;
 }
 
 input[type=“text”] {
 width: 100%;
+max-width: 100%;
+box-sizing: border-box;
 background: #f9f9f6;
-border: 1px solid var(–border);
+border: 1px solid #d8d8d0;
 border-radius: 2px;
 padding: 12px 16px;
-color: var(–text);
+color: #111111;
 font-family: ‘DM Sans’, sans-serif;
 font-size: 16px;
 outline: none;
 transition: border-color 0.2s;
+-webkit-appearance: none;
+appearance: none;
 }
 
 input[type=“text”]:focus {
-border-color: var(–accent);
+border-color: #b45309;
 }
 
 input[type=“text”]::placeholder {
-color: var(–muted);
+color: #888884;
 }
 
 .btn {
@@ -207,22 +211,26 @@ overflow: hidden;
 }
 
 .btn-checkout {
-background: var(–available);
-color: #fff;
+background-color: #1a7a3e !important;
+color: #ffffff !important;
+-webkit-appearance: none;
+appearance: none;
 }
 
 .btn-checkout:hover {
-background: #156333;
+background-color: #156333 !important;
 transform: translateY(-1px);
 }
 
 .btn-checkin {
-background: var(–out);
-color: #fff;
+background-color: #b91c1c !important;
+color: #ffffff !important;
+-webkit-appearance: none;
+appearance: none;
 }
 
 .btn-checkin:hover {
-background: #991b1b;
+background-color: #991b1b !important;
 transform: translateY(-1px);
 }
 
@@ -250,14 +258,14 @@ font-family: ‘DM Mono’, monospace;
 font-size: 11px;
 letter-spacing: 3px;
 text-transform: uppercase;
-color: var(–muted);
+color: #555550;
 }
 
 .clear-btn {
 font-family: ‘DM Mono’, monospace;
 font-size: 10px;
 letter-spacing: 1px;
-color: var(–muted);
+color: #555550;
 background: none;
 border: none;
 cursor: pointer;
@@ -267,7 +275,7 @@ text-decoration: underline;
 text-underline-offset: 3px;
 }
 
-.clear-btn:hover { color: var(–out); }
+.clear-btn:hover { color: #b91c1c; }
 
 .log-list {
 list-style: none;
@@ -301,12 +309,12 @@ text-align: center;
 
 .log-name {
 font-weight: 600;
-color: var(–text);
+color: #111111;
 }
 
 .log-action {
 font-size: 11px;
-color: var(–muted);
+color: #555550;
 font-family: ‘DM Mono’, monospace;
 margin-top: 1px;
 }
@@ -314,7 +322,7 @@ margin-top: 1px;
 .log-timestamp {
 font-family: ‘DM Mono’, monospace;
 font-size: 10px;
-color: var(–muted);
+color: #555550;
 text-align: right;
 white-space: nowrap;
 }
@@ -322,16 +330,16 @@ white-space: nowrap;
 .empty-log {
 text-align: center;
 padding: 32px;
-color: var(–muted);
+color: #555550;
 font-family: ‘DM Mono’, monospace;
 font-size: 12px;
 letter-spacing: 1px;
-border: 1px dashed var(–border);
+border: 1px dashed #d8d8d0;
 border-radius: 2px;
 }
 
 .error {
-color: var(–out);
+color: #b91c1c;
 font-size: 12px;
 font-family: ‘DM Mono’, monospace;
 margin-top: 8px;
@@ -344,7 +352,7 @@ display: none;
 width: 100%;
 max-width: 480px;
 height: 1px;
-background: var(–border);
+background: #d8d8d0;
 margin: 24px 0;
 position: relative;
 z-index: 1;
