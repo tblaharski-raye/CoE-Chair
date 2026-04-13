@@ -386,7 +386,17 @@ z-index: 1;
 
   <div class="current-holder" id="holderDisplay" style="display:none;">
     <div class="holder-label">Checked out by</div>
-    <div class="holder-name" id="holderName"></div>
+    <div style="display:flex;align-items:center;gap:10px;">
+      <div class="holder-name" id="holderName"></div>
+      <button onclick="startEditName()" id="editBtn" style="background:none;border:1px solid #d8d8d0;border-radius:2px;padding:4px 10px;font-size:11px;font-family:'DM Mono',monospace;letter-spacing:1px;color:#555550;cursor:pointer;text-transform:uppercase;">Edit</button>
+    </div>
+    <div id="editNameGroup" style="display:none;margin-top:10px;">
+      <input type="text" id="editNameInput" maxlength="40" autocomplete="off" style="display:block;width:100%;box-sizing:border-box;font-size:18px;padding:14px 16px;border:1px solid #b45309;border-radius:2px;background:#f9f9f6;color:#111;-webkit-appearance:none;margin-bottom:8px;">
+      <div style="display:flex;gap:8px;">
+        <button onclick="saveEditName()" style="flex:1;padding:10px;background:#1a7a3e;color:#fff;border:none;border-radius:2px;font-family:'Bebas Neue',sans-serif;font-size:16px;letter-spacing:2px;cursor:pointer;">Save</button>
+        <button onclick="cancelEditName()" style="flex:1;padding:10px;background:#f4f4f0;color:#111;border:1px solid #d8d8d0;border-radius:2px;font-family:'Bebas Neue',sans-serif;font-size:16px;letter-spacing:2px;cursor:pointer;">Cancel</button>
+      </div>
+    </div>
     <div class="holder-time" id="holderTime"></div>
   </div>
 
