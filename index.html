@@ -497,8 +497,10 @@ z-index: 1;
     [...state.log].reverse().slice(0, 30).forEach(entry => {
       const li = document.createElement('li');
       li.className = 'log-entry';
-      const icon = entry.action === 'checkout' ? '↗' : '↙';
-      const actionLabel = entry.action === 'checkout' ? 'Checked out' : 'Returned';
+      let icon, actionLabel;
+      if (entry.action === 'checkout') { icon = '↗'; actionLabel = 'Checked out'; }
+      else if (entry.action === 'checkin') { icon = '↙'; actionLabel = 'Returned'; }
+      else { icon = '✎'; actionLabel = `Was: ${entry.prev}`; }
       li.innerHTML = `
         <span class="log-icon">${icon}</span>
         <div>
@@ -534,6 +536,29 @@ z-index: 1;
     }
 
     saveState(state);
+    render();
+  }
+
+  function startEditName() {
+    document.getElementById('editNameInput').value = state.holder;
+    document.getElementById('editNameGroup').style.display = 'block';
+    document.getElementById('editBtn').style.display = 'none';
+    document.getElementById('editNameInput').focus();
+  }
+
+  function cancelEditName() {
+    document.getElementById('editNameGroup').style.display = 'none';
+    document.getElementById('editBtn').style.display = 'inline-block';
+  }
+
+  function saveEditName() {
+    const newName = document.getElementById('editNameInput').value.trim();
+    if (!newName) return;
+    // Update log entry for the original checkout to reflect new name
+    state.log.push({ name: newName, action: 'namechange', prev: state.holder, time: new Date().toISOString() });
+    state.holder = newName;
+    saveState(state);
+    cancelEditName();
     render();
   }
 
