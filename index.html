@@ -420,21 +420,18 @@ z-index: 1;
   <div class="empty-log" id="emptyLog">No activity yet.</div>
 </div>
 
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
 <script>
-  const STORAGE_KEY = 'coaches_chair_v1';
+  const SUPABASE_URL = 'https://ntziaibfivztkcnodkel.supabase.co';
+  const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im50emlhaWJmaXZ6dGtjbm9ka2VsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzYwNzgzNzUsImV4cCI6MjA5MTY1NDM3NX0.MVe8HBYX2Z-1y2y39Lg4v1T54hJ6VtMMFK0YeLPm9nw';
 
-  function loadState() {
-    try {
-      const raw = localStorage.getItem(STORAGE_KEY);
-      return raw ? JSON.parse(raw) : { checkedOut: false, holder: null, checkoutTime: null, log: [] };
-    } catch { return { checkedOut: false, holder: null, checkoutTime: null, log: [] }; }
-  }
+  const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-  function saveState(state) {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
-  }
+  let state = { checkedOut: false, holder: null, checkoutTime: null };
+  let logEntries = [];
 
-  let state = loadState();
+  // ── Helpers ──────────────────────────────────────────────────────────────
 
   function formatTime(iso) {
     const d = new Date(iso);
@@ -451,11 +448,18 @@ z-index: 1;
     return `${Math.floor(hrs / 24)}d ago`;
   }
 
+  function setLoading(on) {
+    document.getElementById('actionBtn').disabled = on;
+    document.getElementById('actionBtn').style.opacity = on ? '0.6' : '1';
+  }
+
+  // ── Render ────────────────────────────────────────────────────────────────
+
   function render() {
-    const pill = document.getElementById('statusPill');
+    const pill       = document.getElementById('statusPill');
     const statusText = document.getElementById('statusText');
-    const actionBtn = document.getElementById('actionBtn');
-    const nameGroup = document.getElementById('nameGroup');
+    const actionBtn  = document.getElementById('actionBtn');
+    const nameGroup  = document.getElementById('nameGroup');
     const holderDisplay = document.getElementById('holderDisplay');
     const holderName = document.getElementById('holderName');
     const holderTime = document.getElementById('holderTime');
@@ -483,63 +487,85 @@ z-index: 1;
   }
 
   function renderLog() {
-    const list = document.getElementById('logList');
+    const list  = document.getElementById('logList');
     const empty = document.getElementById('emptyLog');
     list.innerHTML = '';
 
-    if (!state.log || state.log.length === 0) {
+    if (!logEntries.length) {
       empty.style.display = 'block';
       return;
     }
-
     empty.style.display = 'none';
 
-    [...state.log].reverse().slice(0, 30).forEach(entry => {
+    logEntries.slice(0, 30).forEach(entry => {
       const li = document.createElement('li');
       li.className = 'log-entry';
       let icon, actionLabel;
-      if (entry.action === 'checkout') { icon = '↗'; actionLabel = 'Checked out'; }
+      if (entry.action === 'checkout')    { icon = '↗'; actionLabel = 'Checked out'; }
       else if (entry.action === 'checkin') { icon = '↙'; actionLabel = 'Returned'; }
-      else { icon = '✎'; actionLabel = `Was: ${entry.prev}`; }
+      else                                 { icon = '✎'; actionLabel = `Was: ${entry.prev_name}`; }
       li.innerHTML = `
         <span class="log-icon">${icon}</span>
         <div>
           <div class="log-name">${entry.name}</div>
           <div class="log-action">${actionLabel}</div>
         </div>
-        <div class="log-timestamp">${formatTime(entry.time)}</div>
+        <div class="log-timestamp">${formatTime(entry.created_at)}</div>
       `;
       list.appendChild(li);
     });
   }
 
-  function handleAction() {
+  // ── Supabase reads ────────────────────────────────────────────────────────
+
+  async function loadState() {
+    const { data, error } = await sb.from('chair_state').select('*').eq('id', 1).single();
+    if (error) { console.error('loadState:', error); return; }
+    state.checkedOut  = data.checked_out;
+    state.holder      = data.holder;
+    state.checkoutTime = data.checkout_time;
+  }
+
+  async function loadLog() {
+    const { data, error } = await sb
+      .from('chair_log')
+      .select('*')
+      .order('created_at', { ascending: false })
+      .limit(30);
+    if (error) { console.error('loadLog:', error); return; }
+    logEntries = data;
+  }
+
+  // ── Supabase writes ───────────────────────────────────────────────────────
+
+  async function handleAction() {
     const error = document.getElementById('nameError');
     error.classList.remove('visible');
+    setLoading(true);
 
     if (!state.checkedOut) {
       const name = document.getElementById('nameInput').value.trim();
       if (!name) {
         error.classList.add('visible');
         document.getElementById('nameInput').focus();
+        setLoading(false);
         return;
       }
-      state.checkedOut = true;
-      state.holder = name;
-      state.checkoutTime = new Date().toISOString();
-      state.log.push({ name, action: 'checkout', time: state.checkoutTime });
+      const now = new Date().toISOString();
+      await sb.from('chair_state').update({ checked_out: true, holder: name, checkout_time: now }).eq('id', 1);
+      await sb.from('chair_log').insert({ name, action: 'checkout' });
     } else {
-      state.log.push({ name: state.holder, action: 'checkin', time: new Date().toISOString() });
-      state.checkedOut = false;
-      state.holder = null;
-      state.checkoutTime = null;
+      await sb.from('chair_state').update({ checked_out: false, holder: null, checkout_time: null }).eq('id', 1);
+      await sb.from('chair_log').insert({ name: state.holder, action: 'checkin' });
     }
 
-    saveState(state);
+    await loadState();
+    await loadLog();
+    setLoading(false);
     render();
   }
 
-  function startEditName() {
+  async function startEditName() {
     document.getElementById('editNameInput').value = state.holder;
     document.getElementById('editNameGroup').style.display = 'block';
     document.getElementById('editBtn').style.display = 'none';
@@ -551,28 +577,47 @@ z-index: 1;
     document.getElementById('editBtn').style.display = 'inline-block';
   }
 
-  function saveEditName() {
+  async function saveEditName() {
     const newName = document.getElementById('editNameInput').value.trim();
     if (!newName) return;
-    // Update log entry for the original checkout to reflect new name
-    state.log.push({ name: newName, action: 'namechange', prev: state.holder, time: new Date().toISOString() });
-    state.holder = newName;
-    saveState(state);
+    setLoading(true);
+    await sb.from('chair_state').update({ holder: newName }).eq('id', 1);
+    await sb.from('chair_log').insert({ name: newName, action: 'namechange', prev_name: state.holder });
+    await loadState();
+    await loadLog();
+    setLoading(false);
     cancelEditName();
     render();
   }
 
-  function clearLog() {
+  async function clearLog() {
     if (!confirm('Clear the full activity log?')) return;
-    state.log = [];
-    saveState(state);
+    await sb.from('chair_log').delete().neq('id', '00000000-0000-0000-0000-000000000000');
+    logEntries = [];
     renderLog();
   }
 
-  // Update "time since" every minute
-  setInterval(() => { if (state.checkedOut) render(); }, 60000);
+  // ── Real-time subscription ────────────────────────────────────────────────
 
-  render();
+  sb.channel('chair-changes')
+    .on('postgres_changes', { event: '*', schema: 'public', table: 'chair_state' }, async () => {
+      await loadState();
+      render();
+    })
+    .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'chair_log' }, async () => {
+      await loadLog();
+      renderLog();
+    })
+    .subscribe();
+
+  // ── Init ──────────────────────────────────────────────────────────────────
+
+  (async () => {
+    await loadState();
+    await loadLog();
+    render();
+    setInterval(() => { if (state.checkedOut) render(); }, 60000);
+  })();
 </script>
 
 </body>
