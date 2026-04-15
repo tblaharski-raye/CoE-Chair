@@ -392,7 +392,7 @@ z-index: 1;
       <button onclick="startEditName()" id="editBtn" style="background:none;border:1px solid #d8d8d0;border-radius:2px;padding:4px 10px;font-size:11px;font-family:'DM Mono',monospace;letter-spacing:1px;color:#555550;cursor:pointer;text-transform:uppercase;">Edit</button>
     </div>
     <div id="editNameGroup" style="display:none;margin-top:10px;">
-      <input type="text" id="editNameInput" maxlength="40" autocomplete="off" style="display:block;width:100%;box-sizing:border-box;font-size:18px;padding:14px 16px;border:1px solid #b45309;border-radius:2px;background:#f9f9f6;color:#111;-webkit-appearance:none;margin-bottom:8px;">
+      <input type="text" id="editNameInput" maxlength="40" autocomplete="off" onkeydown="if(event.key==='Enter')saveEditName();" style="display:block;width:100%;box-sizing:border-box;font-size:18px;padding:14px 16px;border:1px solid #b45309;border-radius:2px;background:#f9f9f6;color:#111;-webkit-appearance:none;margin-bottom:8px;">
       <div style="display:flex;gap:8px;">
         <button onclick="saveEditName()" style="flex:1;padding:10px;background:#1a7a3e;color:#fff;border:none;border-radius:2px;font-family:'Bebas Neue',sans-serif;font-size:16px;letter-spacing:2px;cursor:pointer;">Save</button>
         <button onclick="cancelEditName()" style="flex:1;padding:10px;background:#f4f4f0;color:#111;border:1px solid #d8d8d0;border-radius:2px;font-family:'Bebas Neue',sans-serif;font-size:16px;letter-spacing:2px;cursor:pointer;">Cancel</button>
@@ -402,8 +402,10 @@ z-index: 1;
   </div>
 
   <div class="form-group" id="nameGroup" style="display:block;width:100%;box-sizing:border-box;">
-    <input type="text" id="nameInput" placeholder="Your name" maxlength="40" autocomplete="off" style="display:block;width:100%;box-sizing:border-box;font-size:18px;padding:14px 16px;border:1px solid #d8d8d0;border-radius:2px;background:#f9f9f6;color:#111;-webkit-appearance:none;">
-    <div class="error" id="nameError">Please enter your name.</div>
+    <select id="nameSelect" style="display:block;width:100%;box-sizing:border-box;font-size:18px;padding:14px 16px;border:1px solid #d8d8d0;border-radius:2px;background:#f9f9f6;color:#111;-webkit-appearance:none;appearance:none;background-image:url('data:image/svg+xml;charset=UTF-8,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%2212%22 height=%228%22 viewBox=%220 0 12 8%22><path fill=%22%23555550%22 d=%22M6 8L0 0h12z%22/></svg>');background-repeat:no-repeat;background-position:right 16px center;">
+      <option value="">Select your name...</option>
+    </select>
+    <div class="error" id="nameError">Please select your name.</div>
   </div>
 
 <button class="btn btn-checkout" id="actionBtn" onclick="handleAction()">Check Out Chair</button>
@@ -415,7 +417,7 @@ z-index: 1;
 <div id="pwModal" style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.5);z-index:100;align-items:center;justify-content:center;">
   <div style="background:#fff;border-radius:4px;padding:28px 24px;width:90%;max-width:320px;box-sizing:border-box;">
     <div style="font-family:'DM Mono',monospace;font-size:11px;letter-spacing:2px;text-transform:uppercase;color:#555550;margin-bottom:12px;">Enter Password</div>
-    <input type="password" id="pwInput" placeholder="Password" style="display:block;width:100%;box-sizing:border-box;font-size:16px;padding:12px 14px;border:1px solid #d8d8d0;border-radius:2px;background:#f9f9f6;color:#111;-webkit-appearance:none;margin-bottom:8px;">
+    <input type="password" id="pwInput" placeholder="Password" onkeydown="if(event.key==='Enter')submitPw();" style="display:block;width:100%;box-sizing:border-box;font-size:16px;padding:12px 14px;border:1px solid #d8d8d0;border-radius:2px;background:#f9f9f6;color:#111;-webkit-appearance:none;margin-bottom:8px;">
     <div id="pwError" style="display:none;color:#b91c1c;font-size:12px;font-family:'DM Mono',monospace;margin-bottom:8px;">Incorrect password.</div>
     <div style="display:flex;gap:8px;">
       <button onclick="submitPw()" style="flex:1;padding:10px;background:#b91c1c;color:#fff;border:none;border-radius:2px;font-family:'Bebas Neue',sans-serif;font-size:16px;letter-spacing:2px;cursor:pointer;">Clear</button>
@@ -424,9 +426,48 @@ z-index: 1;
   </div>
 </div>
 
-  <div class="log-header">
-    <div class="log-title">Activity Log</div>
-    <button class="clear-btn" onclick="clearLog()">Clear log</button>
+<!-- New User Modal -->
+
+<div id="newUserModal" style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.5);z-index:100;align-items:center;justify-content:center;">
+  <div style="background:#fff;border-radius:4px;padding:28px 24px;width:90%;max-width:400px;box-sizing:border-box;max-height:90vh;overflow-y:auto;">
+    <div style="font-family:'Bebas Neue',sans-serif;font-size:24px;letter-spacing:2px;color:#111;margin-bottom:4px;">Add New User</div>
+    <div style="font-family:'DM Mono',monospace;font-size:11px;letter-spacing:1px;color:#555550;margin-bottom:20px;text-transform:uppercase;">Complete agreement to continue</div>
+
+```
+<div style="font-family:'DM Mono',monospace;font-size:11px;letter-spacing:2px;text-transform:uppercase;color:#555550;margin-bottom:8px;">Full Name</div>
+<input type="text" id="newUserName" placeholder="First and last name" maxlength="60" autocomplete="off" style="display:block;width:100%;box-sizing:border-box;font-size:16px;padding:12px 14px;border:1px solid #d8d8d0;border-radius:2px;background:#f9f9f6;color:#111;-webkit-appearance:none;margin-bottom:16px;">
+
+<div style="font-family:'DM Mono',monospace;font-size:11px;letter-spacing:2px;text-transform:uppercase;color:#555550;margin-bottom:8px;">Coaches' Chair Use Agreement</div>
+<div style="background:#f9f9f6;border:1px solid #d8d8d0;border-radius:2px;padding:16px;font-size:13px;line-height:1.7;color:#333;margin-bottom:16px;max-height:180px;overflow-y:auto;">
+  <strong>By adding your name and checking out the Coaches' Chair, you agree to the following:</strong>
+  <ol style="margin-top:10px;padding-left:18px;">
+    <li style="margin-bottom:8px;">You will return the chair promptly when you are finished using it.</li>
+    <li style="margin-bottom:8px;">You will take responsibility for the chair's condition while it is in your possession.</li>
+    <li style="margin-bottom:8px;">You understand that your name and checkout time are logged and visible to others.</li>
+  </ol>
+</div>
+
+<label style="display:flex;align-items:flex-start;gap:10px;cursor:pointer;margin-bottom:20px;font-size:14px;color:#111;font-family:'DM Sans',sans-serif;line-height:1.5;">
+  <input type="checkbox" id="agreeCheck" style="margin-top:3px;width:18px;height:18px;flex-shrink:0;cursor:pointer;">
+  I have read and agree to the Coaches' Chair Use Agreement.
+</label>
+
+<div id="newUserError" style="display:none;color:#b91c1c;font-size:12px;font-family:'DM Mono',monospace;margin-bottom:12px;"></div>
+
+<div style="display:flex;gap:8px;">
+  <button onclick="submitNewUser()" style="flex:1;padding:12px;background:#1a7a3e;color:#fff;border:none;border-radius:2px;font-family:'Bebas Neue',sans-serif;font-size:18px;letter-spacing:2px;cursor:pointer;">Add & Check Out</button>
+  <button onclick="closeNewUserModal()" style="flex:1;padding:12px;background:#f4f4f0;color:#111;border:1px solid #d8d8d0;border-radius:2px;font-family:'Bebas Neue',sans-serif;font-size:18px;letter-spacing:2px;cursor:pointer;">Cancel</button>
+</div>
+```
+
+  </div>
+</div>
+
+```
+<div class="log-title">Activity Log</div>
+<button class="clear-btn" onclick="clearLog()">Clear log</button>
+```
+
   </div>
   <ul class="log-list" id="logList"></ul>
   <div class="empty-log" id="emptyLog">No activity yet.</div>
@@ -492,7 +533,7 @@ z-index: 1;
       actionBtn.textContent = 'Check Out Chair';
       nameGroup.style.display = 'block';
       holderDisplay.style.display = 'none';
-      document.getElementById('nameInput').value = '';
+      document.getElementById('nameSelect').value = '';
     }
 
     renderLog();
@@ -548,6 +589,92 @@ z-index: 1;
     logEntries = data;
   }
 
+  let users = [];
+
+  async function loadUsers() {
+    const { data, error } = await sb.from('chair_users').select('*').order('name');
+    if (error) { console.error('loadUsers:', error); return; }
+    users = data;
+    renderUsers();
+  }
+
+  function renderUsers() {
+    const sel = document.getElementById('nameSelect');
+    const current = sel.value;
+    sel.innerHTML = '<option value="">Select your name...</option>';
+    users.forEach(u => {
+      const opt = document.createElement('option');
+      opt.value = u.name;
+      opt.textContent = u.name;
+      sel.appendChild(opt);
+    });
+    const addOpt = document.createElement('option');
+    addOpt.value = '__add_new__';
+    addOpt.textContent = '+ Add New User';
+    sel.appendChild(addOpt);
+    if (current) sel.value = current;
+
+    sel.onchange = () => {
+      if (sel.value === '__add_new__') {
+        sel.value = '';
+        openNewUserModal();
+      }
+    };
+  }
+
+  function openNewUserModal() {
+    document.getElementById('newUserName').value = '';
+    document.getElementById('agreeCheck').checked = false;
+    document.getElementById('newUserError').style.display = 'none';
+    document.getElementById('newUserModal').style.display = 'flex';
+    setTimeout(() => document.getElementById('newUserName').focus(), 100);
+  }
+
+  function closeNewUserModal() {
+    document.getElementById('newUserModal').style.display = 'none';
+  }
+
+  async function submitNewUser() {
+    const name = document.getElementById('newUserName').value.trim();
+    const agreed = document.getElementById('agreeCheck').checked;
+    const errEl = document.getElementById('newUserError');
+    errEl.style.display = 'none';
+
+    if (!name) {
+      errEl.textContent = 'Please enter your full name.';
+      errEl.style.display = 'block';
+      return;
+    }
+    if (!agreed) {
+      errEl.textContent = 'You must agree to the terms to continue.';
+      errEl.style.display = 'block';
+      return;
+    }
+
+    // Save user to Supabase
+    const { error: userError } = await sb.from('chair_users').insert({ name });
+    if (userError) {
+      if (userError.code === '23505') {
+        errEl.textContent = 'That name already exists in the system.';
+      } else {
+        errEl.textContent = 'Error saving user. Please try again.';
+      }
+      errEl.style.display = 'block';
+      return;
+    }
+
+    // Check out the chair
+    const now = new Date().toISOString();
+    await sb.from('chair_state').update({ checked_out: true, holder: name, checkout_time: now }).eq('id', 1);
+    await sb.from('chair_log').insert({ name, action: 'checkout' });
+
+    await loadUsers();
+    await loadState();
+    await loadLog();
+    closeNewUserModal();
+    render();
+  }
+
   // ── Supabase writes ───────────────────────────────────────────────────────
 
   async function handleAction() {
@@ -556,10 +683,9 @@ z-index: 1;
     setLoading(true);
 
     if (!state.checkedOut) {
-      const name = document.getElementById('nameInput').value.trim();
+      const name = document.getElementById('nameSelect').value;
       if (!name) {
         error.classList.add('visible');
-        document.getElementById('nameInput').focus();
         setLoading(false);
         return;
       }
@@ -644,6 +770,7 @@ z-index: 1;
   // ── Init ──────────────────────────────────────────────────────────────────
 
   (async () => {
+    await loadUsers();
     await loadState();
     await loadLog();
     render();
