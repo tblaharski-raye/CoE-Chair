@@ -455,11 +455,26 @@ z-index: 1;
 <div id="newUserError" style="display:none;color:#b91c1c;font-size:12px;font-family:'DM Mono',monospace;margin-bottom:12px;"></div>
 
 <div style="display:flex;gap:8px;">
-  <button onclick="submitNewUser()" style="flex:1;padding:12px;background:#1a7a3e;color:#fff;border:none;border-radius:2px;font-family:'Bebas Neue',sans-serif;font-size:18px;letter-spacing:2px;cursor:pointer;">Add & Check Out</button>
+  <button onclick="submitNewUser()" style="flex:1;padding:12px;background:#1a7a3e;color:#fff;border:none;border-radius:2px;font-family:'Bebas Neue',sans-serif;font-size:18px;letter-spacing:2px;cursor:pointer;">Submit</button>
   <button onclick="closeNewUserModal()" style="flex:1;padding:12px;background:#f4f4f0;color:#111;border:1px solid #d8d8d0;border-radius:2px;font-family:'Bebas Neue',sans-serif;font-size:18px;letter-spacing:2px;cursor:pointer;">Cancel</button>
 </div>
 ```
 
+  </div>
+</div>
+
+<!-- New User Password Modal -->
+
+<div id="newUserPwModal" style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.5);z-index:110;align-items:center;justify-content:center;">
+  <div style="background:#fff;border-radius:4px;padding:28px 24px;width:90%;max-width:320px;box-sizing:border-box;">
+    <div style="font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:2px;color:#111;margin-bottom:4px;">Admin Approval</div>
+    <div style="font-family:'DM Mono',monospace;font-size:11px;letter-spacing:1px;color:#555550;margin-bottom:16px;text-transform:uppercase;">Enter password to add user</div>
+    <input type="password" id="newUserPwInput" placeholder="Password" onkeydown="if(event.key==='Enter')submitNewUserPw();" style="display:block;width:100%;box-sizing:border-box;font-size:16px;padding:12px 14px;border:1px solid #d8d8d0;border-radius:2px;background:#f9f9f6;color:#111;-webkit-appearance:none;margin-bottom:8px;">
+    <div id="newUserPwError" style="display:none;color:#b91c1c;font-size:12px;font-family:'DM Mono',monospace;margin-bottom:8px;">Incorrect password.</div>
+    <div style="display:flex;gap:8px;">
+      <button onclick="submitNewUserPw()" style="flex:1;padding:10px;background:#1a7a3e;color:#fff;border:none;border-radius:2px;font-family:'Bebas Neue',sans-serif;font-size:16px;letter-spacing:2px;cursor:pointer;">Confirm</button>
+      <button onclick="closeNewUserPwModal()" style="flex:1;padding:10px;background:#f4f4f0;color:#111;border:1px solid #d8d8d0;border-radius:2px;font-family:'Bebas Neue',sans-serif;font-size:16px;letter-spacing:2px;cursor:pointer;">Cancel</button>
+    </div>
   </div>
 </div>
 
@@ -633,6 +648,10 @@ z-index: 1;
     document.getElementById('newUserModal').style.display = 'none';
   }
 
+  function closeNewUserPwModal() {
+    document.getElementById('newUserPwModal').style.display = 'none';
+  }
+
   async function submitNewUser() {
     const name = document.getElementById('newUserName').value.trim();
     const agreed = document.getElementById('agreeCheck').checked;
@@ -649,6 +668,27 @@ z-index: 1;
       errEl.style.display = 'block';
       return;
     }
+
+    // Validation passed — prompt for admin password
+    document.getElementById('newUserPwInput').value = '';
+    document.getElementById('newUserPwError').style.display = 'none';
+    document.getElementById('newUserPwModal').style.display = 'flex';
+    setTimeout(() => document.getElementById('newUserPwInput').focus(), 100);
+  }
+
+  async function submitNewUserPw() {
+    const pwd = document.getElementById('newUserPwInput').value;
+    if (pwd !== 'ADKAR') {
+      document.getElementById('newUserPwError').style.display = 'block';
+      document.getElementById('newUserPwInput').value = '';
+      document.getElementById('newUserPwInput').focus();
+      return;
+    }
+
+    const name = document.getElementById('newUserName').value.trim();
+    const errEl = document.getElementById('newUserError');
+
+    closeNewUserPwModal();
 
     // Save user to Supabase
     const { error: userError } = await sb.from('chair_users').insert({ name });
